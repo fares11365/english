@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: #0b1230; }
+  #stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; }
+  .layer { position: absolute; inset: 0; }
+  #sky { background: linear-gradient(180deg, #0b1230 0%, #1d2559 55%, #3b2f6b 100%); }
+  #glow { background: radial-gradient(ellipse 900px 700px at 50% 100%, rgba(255,170,90,.0), transparent 70%); }
+  #sun {
+    position: absolute; width: 520px; height: 520px; left: 280px; border-radius: 50%;
+    background: radial-gradient(circle, #fff3c4 0%, #ffd27a 35%, rgba(255,160,70,.55) 60%, rgba(255,140,60,0) 72%);
+    filter: blur(2px);
+  }
+  #stars span { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: #fff; }
+  #pattern { opacity: .07; }
+  #hills { position: absolute; left: 0; bottom: 0; width: 1080px; height: 360px; }
+  .frame {
+    position: absolute; left: 60px; right: 60px; top: 330px; bottom: 420px;
+    border: 2px solid rgba(240, 200, 120, .35); border-radius: 46px;
+    background: rgba(10, 14, 40, .38); backdrop-filter: blur(6px);
+  }
+  .frame::before {
+    content: ""; position: absolute; inset: 16px; border: 1px solid rgba(240,200,120,.18); border-radius: 34px;
+  }
+  .slide {
+    position: absolute; left: 100px; right: 100px; top: 330px; bottom: 420px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; color: #fdf6e3; opacity: 0;
+  }
+  .tag {
+    font-family: 'Tajawal', sans-serif; font-weight: 700; font-size: 38px; color: #f0c878;
+    letter-spacing: 1px; margin-bottom: 44px;
+  }
+  .dhikr {
+    font-family: 'Amiri', serif; font-weight: 700; color: #fffaf0; line-height: 1.9;
+    text-shadow: 0 4px 24px rgba(0,0,0,.45);
+  }
+  .count {
+    margin-top: 54px; font-family: 'Tajawal', sans-serif; font-weight: 800; font-size: 40px;
+    color: #1a1340; background: linear-gradient(135deg, #ffe29a, #f0b45a);
+    padding: 16px 48px; border-radius: 999px; box-shadow: 0 10px 30px rgba(240,180,90,.35);
+  }
+  .src { margin-top: 26px; font-family: 'Tajawal', sans-serif; font-weight: 500; font-size: 30px; color: rgba(253,246,227,.65); }
+  #header {
+    position: absolute; top: 120px; left: 0; right: 0; text-align: center;
+    font-family: 'Amiri', serif; font-weight: 700; font-size: 92px; color: #ffe2a0;
+    text-shadow: 0 6px 30px rgba(0,0,0,.4);
+  }
+  #header small { display: block; font-family: 'Tajawal', sans-serif; font-weight: 500; font-size: 36px; color: rgba(253,246,227,.8); margin-top: 4px; }
+  #dots { position: absolute; bottom: 300px; left: 0; right: 0; display: flex; justify-content: center; gap: 18px; direction: rtl; }
+  #dots i { width: 16px; height: 16px; border-radius: 50%; background: rgba(255,255,255,.28); display: block; transition: none; }
+  #dots i.on { background: #ffd27a; width: 46px; border-radius: 10px; }
+  #bar { position: absolute; left: 60px; right: 60px; top: 60px; height: 8px; border-radius: 6px; background: rgba(255,255,255,.18); overflow: hidden; }
+  #bar b { position: absolute; right: 0; top: 0; bottom: 0; background: linear-gradient(270deg, #ffe29a, #f0b45a); display: block; }
+  .big { font-family: 'Amiri', serif; font-weight: 700; font-size: 150px; color: #ffe2a0; line-height: 1.3; text-shadow: 0 8px 40px rgba(0,0,0,.45); }
+  .sub { font-family: 'Tajawal', sans-serif; font-weight: 700; font-size: 52px; color: #fdf6e3; margin-top: 30px; line-height: 1.5; }
+  .note { font-family: 'Tajawal', sans-serif; font-weight: 500; font-size: 38px; color: rgba(253,246,227,.8); margin-top: 40px; line-height: 1.6; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="layer" id="sky"></div>
+  <div class="layer" id="stars"></div>
+  <div id="sun"></div>
+  <div class="layer" id="glow"></div>
+  <svg class="layer" id="pattern" width="1080" height="1920">
+    <defs>
+      <pattern id="p" width="180" height="180" patternUnits="userSpaceOnUse">
+        <g fill="none" stroke="#ffe2a0" stroke-width="2">
+          <rect x="45" y="45" width="90" height="90"/>
+          <rect x="45" y="45" width="90" height="90" transform="rotate(45 90 90)"/>
+          <circle cx="90" cy="90" r="22"/>
+          <path d="M0 90H45M135 90H180M90 0V45M90 135V180"/>
+        </g>
+      </pattern>
+    </defs>
+    <rect width="1080" height="1920" fill="url(#p)"/>
+  </svg>
+  <svg id="hills" viewBox="0 0 1080 360" preserveAspectRatio="none">
+    <path id="h1" d="M0 200 Q 180 120 360 180 T 720 160 T 1080 150 V360 H0Z" fill="#1a1440"/>
+    <path id="h2" d="M0 270 Q 220 200 470 250 T 1080 230 V360 H0Z" fill="#0e0b2a"/>
+    <!-- simple mosque silhouette -->
+    <g fill="#0e0b2a" transform="translate(690 92)">
+      <rect x="0" y="40" width="16" height="160"/><path d="M-4 40 L8 0 L20 40Z"/>
+      <rect x="230" y="40" width="16" height="160"/><path d="M226 40 L238 0 L250 40Z"/>
+      <path d="M40 200 V130 Q123 30 206 130 V200Z"/>
+      <rect x="120" y="40" width="6" height="34"/>
+    </g>
+  </svg>
+  <div class="frame" id="frame"></div>
+
+  <div id="header">أذكار الصباح<small>ابدأ يومك بذكر الله</small></div>
+  <div id="slides"></div>
+  <div id="dots"></div>
+  <div id="bar"><b></b></div>
+</div>
+
+<script>
+const SLIDES = [
+  { kind: 'intro', dur: 4.5,
+    html: `<div class="big">أذكار<br>الصباح</div><div class="sub">حصّن يومك من أوله ☀️</div><div class="note">اقرأها معنا الآن</div>` },
+  { tag: 'الذكر الأول', size: 60, count: 'مرة واحدة', src: 'رواه مسلم',
+    text: 'أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ' },
+  { tag: 'الذكر الثاني', size: 66, count: 'مرة واحدة', src: 'رواه الترمذي',
+    text: 'اللَّهُمَّ بِكَ أَصْبَحْنَا، وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ النُّشُورُ' },
+  { tag: 'سيّد الاستغفار', size: 50, count: 'مرة واحدة', src: 'رواه البخاري',
+    text: 'اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ بِذَنْبِي، فَاغْفِرْ لِي فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ' },
+  { tag: 'الذكر الرابع', size: 62, count: '٣ مرات', src: 'رواه أبو داود والترمذي',
+    text: 'بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ، وَهُوَ السَّمِيعُ الْعَلِيمُ' },
+  { tag: 'الذكر الخامس', size: 64, count: '٣ مرات', src: 'رواه أبو داود',
+    text: 'رَضِيتُ بِاللَّهِ رَبًّا، وَبِالْإِسْلَامِ دِينًا، وَبِمُحَمَّدٍ ﷺ نَبِيًّا' },
+  { tag: 'الذكر السادس', size: 62, count: 'مرة واحدة', src: 'رواه الحاكم',
+    text: 'يَا حَيُّ يَا قَيُّومُ بِرَحْمَتِكَ أَسْتَغِيثُ، أَصْلِحْ لِي شَأْنِي كُلَّهُ، وَلَا تَكِلْنِي إِلَى نَفْسِي طَرْفَةَ عَيْنٍ' },
+  { tag: 'الذكر السابع', size: 96, count: '١٠٠ مرة', src: 'رواه مسلم',
+    text: 'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ' },
+  { kind: 'outro', dur: 5,
+    html: `<div class="big" style="font-size:120px">تقبّل الله</div><div class="sub">شاركها لتكون لك صدقة جارية 🤍</div><div class="note">احفظ الريل ليذكّرك كل صباح</div>` },
+];
+const DEFAULT_DUR = 6.5, FADE = 0.7;
+let t0 = 0;
+SLIDES.forEach(s => { s.dur = s.dur || DEFAULT_DUR; s.start = t0; t0 += s.dur; });
+const TOTAL = t0;
+window.TOTAL = TOTAL;
+
+const wrap = document.getElementById('slides');
+SLIDES.forEach((s, i) => {
+  const el = document.createElement('div');
+  el.className = 'slide';
+  el.innerHTML = s.html || `<div class="tag">${s.tag}</div><div class="dhikr" style="font-size:${s.size}px">${s.text}</div><div class="count">${s.count}</div><div class="src">${s.src}</div>`;
+  wrap.appendChild(el); s.el = el;
+});
+const dotsEl = document.getElementById('dots');
+const dhikrSlides = SLIDES.filter(s => !s.kind);
+dhikrSlides.forEach(() => dotsEl.appendChild(document.createElement('i')));
+
+// stars (deterministic)
+let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+const starsEl = document.getElementById('stars');
+const stars = [];
+for (let i = 0; i < 70; i++) {
+  const sp = document.createElement('span');
+  const sz = 2 + rnd() * 4;
+  sp.style.cssText = `left:${rnd()*1080}px;top:${rnd()*1100}px;width:${sz}px;height:${sz}px`;
+  starsEl.appendChild(sp); stars.push({ el: sp, ph: rnd() * 6.28, sp: 1 + rnd() * 2 });
+}
+
+const lerp = (a, b, k) => a + (b - a) * k;
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const ease = k => k < .5 ? 4*k*k*k : 1 - Math.pow(-2*k + 2, 3) / 2;
+const mix = (c1, c2, k) => `rgb(${c1.map((v, i) => Math.round(lerp(v, c2[i], k))).join(',')})`;
+
+const NIGHT = [[11,18,48],[29,37,89],[59,47,107]];
+const DAWN  = [[38,62,130],[214,120,120],[255,184,110]];
+
+window.render = function (t) {
+  const p = clamp(t / TOTAL);
+  const d = ease(clamp(p * 1.25));
+  document.getElementById('sky').style.background =
+    `linear-gradient(180deg, ${mix(NIGHT[0], DAWN[0], d)} 0%, ${mix(NIGHT[1], DAWN[1], d)} 58%, ${mix(NIGHT[2], DAWN[2], d)} 100%)`;
+  document.getElementById('glow').style.background =
+    `radial-gradient(ellipse 1000px 800px at 50% 100%, rgba(255,190,110,${(0.55*d).toFixed(3)}), transparent 70%)`;
+  const sun = document.getElementById('sun');
+  sun.style.top = `${lerp(1800, 1260, d)}px`;
+  sun.style.opacity = clamp(d * 2);
+  stars.forEach(s => s.el.style.opacity = ((1 - d) * (0.45 + 0.55 * Math.sin(t * s.sp + s.ph) ** 2)).toFixed(3));
+  document.getElementById('pattern').style.transform = `translateY(${-t * 6}px)`;
+  document.querySelector('#bar b').style.width = `${p * 100}%`;
+
+  let active = -1;
+  SLIDES.forEach((s, i) => {
+    const lt = t - s.start;
+    let o = 0, y = 0, sc = 1;
+    if (lt >= -FADE && lt <= s.dur) {
+      const fin = i === 0 ? 1 : clamp((lt + 0) / FADE);
+      const fout = i === SLIDES.length - 1 ? 1 : clamp((s.dur - lt) / FADE);
+      o = Math.min(fin, fout);
+      y = (1 - ease(fin)) * 60 - (1 - fout) * 40;
+      sc = 1 + 0.025 * clamp(lt / s.dur);
+    }
+    if (lt >= 0 && lt < s.dur) active = i;
+    s.el.style.opacity = o.toFixed(3);
+    s.el.style.transform = `translateY(${y}px) scale(${sc})`;
+    // counter pulse
+    const c = s.el.querySelector('.count');
+    if (c) c.style.transform = `scale(${1 + 0.04 * Math.sin(lt * 4) * clamp(lt)})`;
+  });
+  const cur = SLIDES[active] || SLIDES[0];
+  const introEnd = SLIDES[0].dur, outroStart = SLIDES[SLIDES.length-1].start;
+  const hdrO = Math.min(clamp((t - introEnd + FADE) / FADE), clamp((outroStart - t) / FADE)).toFixed(3);
+  document.getElementById('header').style.opacity = hdrO;
+  document.getElementById('frame').style.opacity = hdrO;
+  dotsEl.style.opacity = hdrO;
+  const di = dhikrSlides.indexOf(cur);
+  [...dotsEl.children].forEach((el, i) => el.className = i === di ? 'on' : '');
+};
+render(0);
+</script>
+</body>
+</html>
