@@ -26,3 +26,9 @@ python3 make_videos.py cafe          # only episodes whose name matches
 
 The two English voices (about 60 MB each) are downloaded to `voices/` on the
 first run.
+
+## TikTok / vertical versions
+
+`python3 make_videos.py --tiktok` renders 1080x1920 (9:16) versions into
+`videos/tiktok/`. Text is kept away from the bottom caption area and the
+right-hand buttons.

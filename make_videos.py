@@ -6,6 +6,7 @@ subtitles, and a "listen and repeat" recap of the key phrases.
 
 Usage:  python3 make_videos.py            # render every episode
         python3 make_videos.py cafe       # render episodes whose slug matches
+        python3 make_videos.py --tiktok   # vertical 1080x1920 versions in videos/tiktok
 
 Needs: ffmpeg, Pillow, numpy, piper-tts (pip install piper-tts).
 Voices are downloaded to ./voices on first run.
@@ -19,6 +20,8 @@ OUT = os.path.join(ROOT, "videos")
 VOICES = os.path.join(ROOT, "voices")
 CACHE = os.path.join(ROOT, ".cache")
 W, H, S, FPS, SR = 1280, 720, 2, 24, 22050
+VW, VH, SY = 720, 1280, 250  # vertical (TikTok) page, and where the stage sits on it
+NAVY = (24, 30, 60)
 GY = 545  # ground line
 FONT_B = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 FONT_R = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
@@ -96,35 +99,49 @@ def font(size, bold=True):
 
 
 class Cv:
-    """Tiny canvas that draws in 1280x720 units onto a supersampled image."""
+    """Tiny canvas that draws in stage units onto a supersampled image.
 
-    def __init__(self, im):
-        self.im, self.d = im, ImageDraw.Draw(im)
+    (ox, oy) shifts everything, so the same drawing code can be placed anywhere.
+    """
+
+    def __init__(self, im, ox=0, oy=0):
+        self.im, self.d, self.ox, self.oy = im, ImageDraw.Draw(im), ox, oy
+
+    def box(self, b):
+        return ((b[0] + self.ox) * S, (b[1] + self.oy) * S,
+                (b[2] + self.ox) * S, (b[3] + self.oy) * S)
+
+    def pts(self, pts):
+        return [((x + self.ox) * S, (y + self.oy) * S) for x, y in pts]
 
     def stroke(self, pts, col, w):
-        q = [(x * S, y * S) for x, y in pts]
+        q = self.pts(pts)
         self.d.line(q, fill=col, width=int(w * S), joint="curve")
         r = w * S / 2
         for x, y in q:
             self.d.ellipse((x - r, y - r, x + r, y + r), fill=col)
 
-    def circle(self, c, r, fill=None, outline=None, w=0):
-        self.d.ellipse(((c[0] - r) * S, (c[1] - r) * S, (c[0] + r) * S, (c[1] + r) * S),
-                       fill=fill, outline=outline, width=int(w * S))
+    def ell(self, b, fill=None, outline=None, w=0):
+        self.d.ellipse(self.box(b), fill=fill, outline=outline, width=int(w * S))
 
-    def rect(self, box, fill=None, outline=None, w=0, r=0):
-        b = [v * S for v in box]
-        self.d.rounded_rectangle(b, radius=r * S, fill=fill, outline=outline, width=int(w * S))
+    def circle(self, c, r, fill=None, outline=None, w=0):
+        self.ell((c[0] - r, c[1] - r, c[0] + r, c[1] + r), fill, outline, w)
+
+    def arc(self, b, a0, a1, fill, w):
+        self.d.arc(self.box(b), a0, a1, fill=fill, width=int(w * S))
+
+    def rect(self, b, fill=None, outline=None, w=0, r=0):
+        self.d.rounded_rectangle(self.box(b), radius=r * S, fill=fill, outline=outline,
+                                 width=int(w * S))
 
     def poly(self, pts, fill):
-        self.d.polygon([(x * S, y * S) for x, y in pts], fill=fill)
+        self.d.polygon(self.pts(pts), fill=fill)
 
     def pie(self, c, r, a0, a1, fill):
-        self.d.pieslice(((c[0] - r) * S, (c[1] - r) * S, (c[0] + r) * S, (c[1] + r) * S),
-                        a0, a1, fill=fill)
+        self.d.pieslice(self.box((c[0] - r, c[1] - r, c[0] + r, c[1] + r)), a0, a1, fill=fill)
 
     def text(self, xy, s, size, fill=INK, anchor="la", bold=True):
-        self.d.text((xy[0] * S, xy[1] * S), s, font=font(size, bold), fill=fill, anchor=anchor)
+        self.d.text(self.pts([xy])[0], s, font=font(size, bold), fill=fill, anchor=anchor)
 
     def width(self, s, size, bold=True):
         return font(size, bold).getlength(s) / S
@@ -166,6 +183,8 @@ def pose_for(action, t):
         p["front"] = p["back"] = (150, 165)
     elif action == "give":
         p["front"] = (82, 92)
+    elif action == "point_up":
+        p["front"] = (150 + 3 * math.sin(t * 6), 158)
     elif action == "nod":
         p["nod"] = 5 * math.sin(t * 8)
     elif action == "walk":
@@ -188,7 +207,7 @@ def draw_fig(cv, who, x, facing, action, t, mouth, k=1.12):
     sh = (neck[0], neck[1] + 12 * k)
     # shadow
     sw = 46 * k * (1 - p["dy"] / 120)
-    cv.d.ellipse(((x - sw) * S, (GY - 5) * S, (x + sw) * S, (GY + 9) * S), fill=(0, 0, 0, 40))
+    cv.ell((x - sw, GY - 5, x + sw, GY + 9), fill=(0, 0, 0))
 
     def limb(side, a, b):
         a, b = math.radians(a), math.radians(b)
@@ -229,10 +248,9 @@ def draw_fig(cv, who, x, facing, action, t, mouth, k=1.12):
     my = ey + 14
     if mouth > 0.12:
         h = 3 + 9 * mouth
-        cv.d.ellipse(((ex - 8) * S, (my - h) * S, (ex + 8) * S, (my + h) * S), fill=(150, 40, 50))
+        cv.ell((ex - 8, my - h, ex + 8, my + h), fill=(150, 40, 50))
     else:
-        cv.d.arc(((ex - 9) * S, (my - 10) * S, (ex + 9) * S, (my + 4) * S), 20, 160,
-                 fill=INK, width=int(3 * S))
+        cv.arc((ex - 9, my - 10, ex + 9, my + 4), 20, 160, INK, 3)
     return hand
 
 
@@ -287,7 +305,7 @@ def scene_cafe():
         cv.rect((1040, 340, 1110, 400), fill=(70, 70, 80), r=6)  # till
         if st.get("cup"):
             cv.rect((772, 362, 806, 400), fill=(255, 255, 255), outline=INK, w=3, r=4)
-            cv.d.arc((804 * S, 370 * S, 822 * S, 392 * S), 270, 90, fill=INK, width=3 * S)
+            cv.arc((804, 370, 822, 392), 270, 90, INK, 3)
             cv.rect((772, 372, 806, 384), fill=(150, 80, 50))
         if st.get("cake"):
             cv.poly([(830, 400), (880, 400), (880, 376)], fill=(110, 65, 40))
@@ -648,8 +666,102 @@ def render_frame(ep, n, s, t, bgs):
     return im.convert("RGB").resize((W, H), Image.LANCZOS)
 
 
-def render(ep, n):
-    os.makedirs(OUT, exist_ok=True)
+def fit(cv, text, size, maxw):
+    while cv.width(text, size) > maxw:
+        size -= 1
+    return size
+
+
+def render_frame_v(ep, n, s, t, bgs):
+    """9:16 layout. Text stays clear of TikTok's bottom caption and right-hand buttons."""
+    lt = t - s["t0"]
+    kind = s["kind"]
+    scene = {"title": "title", "recap": "board", "end": "end"}.get(kind, ep["scene"])
+    bg, fg = bgs[scene]
+    x0 = ep["vx0"] if kind in ("say", "walk") else 0
+    im = Image.new("RGBA", (VW * S, VH * S), NAVY)
+    im.paste(bg.crop((x0 * S, 0, (x0 + VW) * S, H * S)), (0, SY * S))
+    top = Cv(im)
+    top.text((VW / 2, 125), "ENGLISH WITH STICK MAN", 26, (255, 214, 102), "mm")
+    head = f"Ep {n} · {ep['title']}"
+    top.text((VW / 2, 185), head, fit(top, head, 42, 640), (255, 255, 255), "mm")
+    top.text((VW / 2, 1010), "Listen · Read · Repeat", 24, (140, 150, 195), "mm")
+    cv, pg = Cv(im, -x0, SY), Cv(im, 0, SY)  # scrolled stage / fixed stage
+    if kind == "title":
+        pg.text((360, 45), f"EPISODE {n}", 28, (150, 90, 20), "mm")
+        for i, ln in enumerate(wrap(pg, ep["title"], 62, 640)):
+            pg.text((360, 115 + i * 72), ln, 62, INK, "mm")
+        pop = min(1.0, 0.4 + lt * 3)
+        draw_fig(pg, "sam", 250, 1, "wave", t, 0, k=1.12 * pop)
+        draw_fig(pg, "mia", 470, -1, "wave", t, mouth_of(s, "mia", lt), k=1.12 * pop)
+    elif kind == "end":
+        pg.text((360, 85), "Great job!", 70, INK, "mm")
+        pg.text((360, 160), "See you next time!", 36, (40, 120, 80), "mm")
+        draw_fig(pg, "sam", 250, 1, "jump", t, mouth_of(s, "sam", lt))
+        draw_fig(pg, "mia", 470, -1, "jump", t + 0.25, 0)
+    elif kind == "recap":
+        pg.rect((30, 10, 690, 335), fill=(255, 255, 255), outline=(110, 120, 135), w=8, r=14)
+        pg.text((360, 48), "Listen and Repeat", 30, (60, 90, 150), "mm")
+        for i, ph in enumerate(ep["phrases"]):
+            y = 105 + i * 50
+            if i == s["idx"]:
+                pg.rect((46, y - 23, 674, y + 23), fill=(255, 235, 130), r=10)
+            done = i < s["idx"] or (i == s["idx"] and s["turn"])
+            pg.text((62, y), "✓" if done else "•", 28,
+                    (50, 160, 90) if done else (150, 150, 160), "lm")
+            pg.text((100, y), ph, fit(pg, ph, 32, 560),
+                    INK if i <= s["idx"] else (165, 170, 180), "lm")
+        act = "point_up" if s["action"] == "point" else s["action"]
+        draw_fig(pg, "mia", 360, 1, act, t, mouth_of(s, "mia", lt), k=0.8)
+        if s["turn"]:
+            ph = ep["phrases"][s["idx"]]
+            pg.rect((30, 596, 610, 704), fill=(255, 250, 225), outline=(240, 170, 40), w=4, r=22)
+            pg.text((320, 624), "Your turn!", 26, (215, 140, 20), "mm")
+            pg.text((320, 660), ph, fit(pg, ph, 34, 540), INK, "mm")
+            pg.rect((60, 684, 580, 692), fill=(235, 225, 190), r=4)
+            pg.rect((60, 684, 60 + 520 * min(1, lt / s["dur"]), 692), fill=(240, 170, 40), r=4)
+        elif s["idx"] < 0:
+            pg.rect((30, 606, 610, 694), fill=(255, 255, 255), outline=CAST["mia"]["accent"], w=4, r=22)
+            pg.text((320, 650), s["text"], 34, INK, "mm")
+    else:
+        speaker = s.get("who")
+        for who in sorted(s["pos"], key=lambda w: w == speaker):
+            p = s["pos"][who]
+            x, facing, action = p["x"], p["facing"], "idle"
+            if who == speaker:
+                action = s["action"]
+                if kind == "walk":
+                    x = s["x0"] + (s["x1"] - s["x0"]) * min(1.0, lt / s["dur"])
+                    facing = 1 if s["x1"] > s["x0"] else -1
+                    action = "walk"
+            elif kind == "say" and int(s["t0"] * 7) % 3 == 0:
+                action = "nod"
+            draw_fig(cv, who, x, facing, action, t, mouth_of(s, who, lt))
+        if fg:
+            fg(cv, s["state"])
+        if kind == "say":
+            c = CAST[speaker]
+            pg.rect((30, 24, 690, 164), fill=(255, 255, 255), outline=c["accent"], w=4, r=22)
+            pg.rect((56, 6, 56 + pg.width(c["name"], 24) + 36, 44), fill=c["accent"], r=14)
+            pg.text((74, 25), c["name"], 24, (255, 255, 255), "lm")
+            lines = wrap(pg, s["text"], 36, 610)
+            y = 98 - (len(lines) - 1) * 21
+            for ln in lines:
+                pg.text((360, y), ln, 36, INK, "mm")
+                y += 42
+    # keep the stage from spilling onto the header/footer bands
+    top.rect((0, SY + H, VW, VH), fill=NAVY)
+    top.text((VW / 2, 1010), "Listen · Read · Repeat", 24, (140, 150, 195), "mm")
+    return im.convert("RGB").resize((1080, 1920), Image.LANCZOS)
+
+
+def render(ep, n, vertical=False):
+    out_dir = os.path.join(OUT, "tiktok") if vertical else OUT
+    os.makedirs(out_dir, exist_ok=True)
+    xs = [c["x"] for c in ep["cast"].values()] + [e[2] for e in ep["script"] if e[0] == "walk"]
+    xs = [x for x in xs if 0 < x < W]
+    ep["vx0"] = int(max(0, min(W - VW, (min(xs) + max(xs)) / 2 - 330)))
+    frame, size = (render_frame_v, "1080x1920") if vertical else (render_frame, f"{W}x{H}")
     segs, total = build(ep, n)
     audio = music(total)
     fade = np.minimum(1, np.minimum(np.arange(len(audio)), len(audio) - np.arange(len(audio))) / SR)
@@ -662,10 +774,10 @@ def render(ep, n):
     with wave.open(wav, "wb") as wf:
         wf.setnchannels(1), wf.setsampwidth(2), wf.setframerate(SR)
         wf.writeframes((np.clip(audio, -1, 1) * 32767).astype(np.int16).tobytes())
-    out = os.path.join(OUT, ep["slug"] + ".mp4")
+    out = os.path.join(out_dir, ep["slug"] + ".mp4")
     ff = subprocess.Popen(
         ["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24",
-         "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-", "-i", wav,
+         "-s", size, "-r", str(FPS), "-i", "-", "-i", wav,
          "-c:v", "libx264", "-preset", "medium", "-crf", "21", "-pix_fmt", "yuv420p",
          "-c:a", "aac", "-b:a", "128k", "-movflags", "+faststart", "-shortest", out],
         stdin=subprocess.PIPE)
@@ -675,7 +787,7 @@ def render(ep, n):
         t = f / FPS
         while si + 1 < len(segs) and t >= segs[si + 1]["t0"]:
             si += 1
-        ff.stdin.write(render_frame(ep, n, segs[si], t, bgs).tobytes())
+        ff.stdin.write(frame(ep, n, segs[si], t, bgs).tobytes())
     ff.stdin.close()
     if ff.wait():
         raise SystemExit("ffmpeg failed")
@@ -683,7 +795,8 @@ def render(ep, n):
 
 
 if __name__ == "__main__":
-    pick = sys.argv[1:]
+    vertical = "--tiktok" in sys.argv
+    pick = [a for a in sys.argv[1:] if not a.startswith("--")]
     for n, ep in enumerate(EPISODES, 1):
         if not pick or any(p in ep["slug"] for p in pick):
-            render(ep, n)
+            render(ep, n, vertical)
