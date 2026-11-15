@@ -320,6 +320,44 @@ def scene_street():
     return im, None
 
 
+def scene_shop():
+    im = gradient((225, 235, 250), (245, 235, 225))
+    cv = Cv(im)
+    cv.rect((0, 500, W, H), fill=(200, 185, 165))
+    cv.text((640, 60), "STICK SHOP", 44, (60, 90, 150), "ma")
+    cv.rect((70, 150, 300, 250), fill=(230, 60, 70), r=14)
+    cv.text((185, 200), "SALE", 54, (255, 255, 255), "mm")
+    cv.stroke([(900, 190), (1230, 190)], (110, 110, 120), 8)
+    for x in (900, 1230):
+        cv.stroke([(x, 190), (x, 520)], (110, 110, 120), 8)
+    cols = [(52, 120, 220), (240, 190, 60), (60, 160, 100), (230, 90, 120)]
+    for i, c in enumerate(cols):
+        x = 950 + i * 76
+        cv.stroke([(x, 190), (x, 212)], (110, 110, 120), 4)
+        cv.poly([(x - 16, 212), (x + 16, 212), (x + 44, 236), (x + 30, 256), (x + 22, 248),
+                 (x + 22, 330), (x - 22, 330), (x - 22, 248), (x - 30, 256), (x - 44, 236)], fill=c)
+    cv.rect((70, 300, 250, 520), fill=(250, 250, 250), outline=(150, 120, 90), w=8, r=6)  # mirror
+    cv.stroke([(110, 340), (160, 400)], (215, 230, 240), 6)
+    return im, None
+
+
+def scene_clinic():
+    im = gradient((215, 240, 235), (240, 250, 245))
+    cv = Cv(im)
+    cv.rect((0, 500, W, H), fill=(190, 210, 205))
+    cv.circle((640, 110), 52, fill=(255, 255, 255), outline=(220, 60, 70), w=6)
+    cv.rect((628, 76, 652, 144), fill=(220, 60, 70))
+    cv.rect((606, 98, 674, 122), fill=(220, 60, 70))
+    cv.rect((90, 140, 330, 380), fill=(255, 255, 255), outline=(120, 140, 150), w=6, r=8)
+    for i, (ch, sz) in enumerate((("E", 56), ("F P", 42), ("T O Z", 32), ("L P E D", 24))):
+        cv.text((210, 185 + i * 55), ch, sz, INK, "mm")
+    cv.rect((960, 400, 1240, 440), fill=(255, 255, 255), outline=(120, 140, 150), w=5, r=10)  # bed
+    cv.rect((1180, 370, 1240, 404), fill=(170, 210, 240), r=10)
+    for x in (980, 1220):
+        cv.stroke([(x, 440), (x, 530)], (120, 140, 150), 8)
+    return im, None
+
+
 def scene_plain(top, bot):
     def make():
         im = gradient(top, bot)
@@ -328,7 +366,7 @@ def scene_plain(top, bot):
     return make
 
 
-SCENES = dict(park=scene_park, cafe=scene_cafe, street=scene_street,
+SCENES = dict(shop=scene_shop, clinic=scene_clinic, park=scene_park, cafe=scene_cafe, street=scene_street,
               title=scene_plain((255, 214, 102), (255, 240, 190)),
               board=scene_plain((200, 225, 245), (235, 245, 250)),
               end=scene_plain((160, 220, 190), (225, 245, 225)))
@@ -406,6 +444,74 @@ EPISODES = [
         ],
         phrases=["Excuse me!", "Where is the train station?", "Go straight ahead.",
                  "Turn left at the bank.", "You're welcome!"],
+    ),
+    dict(
+        slug="04-going-shopping", title="Going Shopping", scene="shop",
+        cast=dict(sam=dict(x=-80), mia=dict(x=790, facing=-1)),
+        script=[
+            ("walk", "sam", 500, 2.2),
+            ("say", "mia", "Hello! Can I help you?", "wave"),
+            ("say", "sam", "Yes, please. I'm looking for a T-shirt.", "talk"),
+            ("say", "mia", "What size are you?", "talk"),
+            ("say", "sam", "I'm a medium.", "talk"),
+            ("say", "mia", "What color would you like?", "point_back"),
+            ("say", "sam", "Blue, please. It's my favorite color.", "talk"),
+            ("say", "mia", "Here you are. This one is very nice.", "give"),
+            ("say", "sam", "Can I try it on?", "think"),
+            ("say", "mia", "Sure! The mirror is over there.", "point"),
+            ("say", "sam", "It fits perfectly! How much is it?", "jump"),
+            ("say", "mia", "It's ten dollars.", "talk"),
+            ("say", "sam", "Great! I'll take it.", "talk"),
+            ("say", "mia", "Thank you! Have a nice day!", "wave"),
+        ],
+        phrases=["Can I help you?", "I'm looking for a T-shirt.", "What size are you?",
+                 "Can I try it on?", "I'll take it."],
+    ),
+    dict(
+        slug="05-what-do-you-like", title="What Do You Like?", scene="park",
+        cast=dict(sam=dict(x=-80), mia=dict(x=W + 80)),
+        script=[
+            ("walk", "sam", 470, 1.8), ("walk", "mia", 810, 1.8),
+            ("say", "sam", "Hi, Mia! What are you doing?", "wave"),
+            ("say", "mia", "Hi, Sam! I'm going to play football.", "talk"),
+            ("say", "sam", "Cool! Do you like sports?", "talk"),
+            ("say", "mia", "Yes, I love sports! What about you?", "jump"),
+            ("say", "sam", "I like swimming, but I don't like running.", "talk"),
+            ("say", "mia", "What do you do in your free time?", "talk"),
+            ("say", "sam", "I read books and listen to music.", "think"),
+            ("say", "mia", "Me too! I love music.", "talk"),
+            ("say", "sam", "Can you play the guitar?", "point"),
+            ("say", "mia", "Yes, I can. But I can't sing!", "shrug"),
+            ("say", "sam", "That's funny! Let's play football together.", "talk"),
+            ("say", "mia", "Good idea! Let's go!", "jump"),
+            ("walk", "mia", W + 90, 1.6), ("walk", "sam", W + 90, 2.4),
+        ],
+        phrases=["Do you like sports?", "I like swimming.", "I don't like running.",
+                 "What do you do in your free time?", "Let's go!"],
+    ),
+    dict(
+        slug="06-at-the-doctor", title="At the Doctor", scene="clinic",
+        cast=dict(sam=dict(x=-80), mia=dict(x=800, facing=-1)),
+        script=[
+            ("walk", "sam", 500, 2.4),
+            ("say", "mia", "Good afternoon. I'm Doctor Mia. How can I help you?", "wave"),
+            ("say", "sam", "Hello, doctor. I don't feel well.", "shrug"),
+            ("say", "mia", "What's the matter?", "talk"),
+            ("say", "sam", "I have a headache and a sore throat.", "think"),
+            ("say", "mia", "Do you have a fever?", "talk"),
+            ("say", "sam", "Yes, I think so. I feel very tired.", "talk"),
+            ("say", "mia", "Let me see. Open your mouth, please.", "point"),
+            ("say", "sam", "Okay.", "nod"),
+            ("say", "mia", "You have a cold. Don't worry.", "talk"),
+            ("say", "mia", "Take this medicine twice a day.", "give"),
+            ("say", "sam", "Thank you, doctor.", "talk"),
+            ("say", "mia", "Drink a lot of water and get some rest.", "talk"),
+            ("say", "sam", "I will. Thanks a lot!", "wave"),
+            ("say", "mia", "Get well soon!", "wave"),
+            ("walk", "sam", -90, 2.4),
+        ],
+        phrases=["I don't feel well.", "What's the matter?", "I have a headache.",
+                 "Take this medicine twice a day.", "Get well soon!"],
     ),
 ]
 NUM = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]

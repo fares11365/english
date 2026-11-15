@@ -9,6 +9,9 @@ followed by a "listen and repeat" recap of the key phrases.
 | 1 | Nice to Meet You (greetings and introductions) | `videos/01-nice-to-meet-you.mp4` |
 | 2 | At the Café (ordering food and drinks) | `videos/02-at-the-cafe.mp4` |
 | 3 | Asking for Directions | `videos/03-asking-for-directions.mp4` |
+| 4 | Going Shopping (buying clothes) | `videos/04-going-shopping.mp4` |
+| 5 | What Do You Like? (hobbies, likes and dislikes) | `videos/05-what-do-you-like.mp4` |
+| 6 | At the Doctor (health) | `videos/06-at-the-doctor.mp4` |
 
 ## Make your own
 
