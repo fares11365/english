@@ -376,6 +376,29 @@ def scene_clinic():
     return im, None
 
 
+def scene_home():
+    im = gradient((255, 236, 214), (250, 225, 200))
+    cv = Cv(im)
+    cv.rect((0, 500, W, H), fill=(185, 140, 105))
+    cv.rect((0, 488, W, 504), fill=(150, 105, 75))
+    cv.rect((140, 120, 420, 340), fill=(170, 215, 245), outline=(255, 255, 255), w=12, r=6)
+    cv.stroke([(280, 126), (280, 334)], (255, 255, 255), 8)
+    cv.circle((370, 180), 28, fill=(255, 220, 90))
+    cv.circle((640, 110), 46, fill=(255, 255, 255), outline=(90, 80, 75), w=6)  # clock
+    cv.stroke([(640, 110), (640, 80)], INK, 5)
+    cv.stroke([(640, 110), (662, 118)], INK, 5)
+    for i, (x, c) in enumerate(((900, (240, 190, 60)), (1010, (52, 120, 220)), (1120, (230, 90, 120)))):
+        y = 150 + (i % 2) * 40
+        cv.rect((x - 46, y, x + 46, y + 110), fill=(255, 255, 255), outline=(150, 105, 75), w=6, r=4)
+        cv.circle((x, y + 45), 18, fill=c)
+        cv.rect((x - 26, y + 70, x + 26, y + 100), fill=c, r=10)
+    cv.rect((1040, 400, 1240, 470), fill=(110, 140, 120), r=16)  # sofa
+    cv.rect((1020, 370, 1060, 500), fill=(95, 125, 105), r=14)
+    cv.rect((1220, 370, 1260, 500), fill=(95, 125, 105), r=14)
+    cv.rect((1050, 340, 1230, 410), fill=(95, 125, 105), r=16)
+    return im, None
+
+
 def scene_plain(top, bot):
     def make():
         im = gradient(top, bot)
@@ -384,7 +407,7 @@ def scene_plain(top, bot):
     return make
 
 
-SCENES = dict(shop=scene_shop, clinic=scene_clinic, park=scene_park, cafe=scene_cafe, street=scene_street,
+SCENES = dict(home=scene_home, shop=scene_shop, clinic=scene_clinic, park=scene_park, cafe=scene_cafe, street=scene_street,
               title=scene_plain((255, 214, 102), (255, 240, 190)),
               board=scene_plain((200, 225, 245), (235, 245, 250)),
               end=scene_plain((160, 220, 190), (225, 245, 225)))
@@ -530,6 +553,69 @@ EPISODES = [
         ],
         phrases=["I don't feel well.", "What's the matter?", "I have a headache.",
                  "Take this medicine twice a day.", "Get well soon!"],
+    ),
+    dict(
+        slug="07-what-time-is-it", title="What Time Is It?", scene="street",
+        cast=dict(sam=dict(x=-80), mia=dict(x=780, facing=-1)),
+        script=[
+            ("walk", "sam", 430, 2.0),
+            ("say", "sam", "Excuse me. What time is it, please?", "wave"),
+            ("say", "mia", "It's half past three.", "talk"),
+            ("say", "sam", "Oh no! I'm late!", "shrug"),
+            ("say", "mia", "Late? Where are you going?", "talk"),
+            ("say", "sam", "I have an English class at three o'clock.", "think"),
+            ("say", "mia", "What time does it finish?", "talk"),
+            ("say", "sam", "It finishes at five.", "talk"),
+            ("say", "mia", "Don't worry. You can still go!", "point_back"),
+            ("say", "sam", "You're right. Thank you!", "nod"),
+            ("say", "mia", "Hurry up! Good luck!", "wave"),
+            ("walk", "sam", W + 90, 2.0),
+        ],
+        phrases=["What time is it?", "It's half past three.", "I'm late!",
+                 "What time does it finish?", "Hurry up!"],
+    ),
+    dict(
+        slug="08-the-weather", title="How's the Weather?", spoken_title="How's the weather?",
+        scene="park",
+        cast=dict(sam=dict(x=-80), mia=dict(x=W + 80)),
+        script=[
+            ("walk", "sam", 470, 1.8), ("walk", "mia", 810, 1.8),
+            ("say", "mia", "Good morning, Sam! It's a beautiful day!", "wave"),
+            ("say", "sam", "Yes! It's sunny and warm.", "point_up"),
+            ("say", "mia", "What was the weather like yesterday?", "talk"),
+            ("say", "sam", "It was cold and rainy.", "shrug"),
+            ("say", "mia", "I don't like rain. I love summer.", "talk"),
+            ("say", "sam", "What's your favorite season?", "talk"),
+            ("say", "mia", "Summer, of course! What about you?", "jump"),
+            ("say", "sam", "I like winter. I love snow!", "think"),
+            ("say", "mia", "Will it rain tomorrow?", "talk"),
+            ("say", "sam", "I think it will be cloudy and windy.", "talk"),
+            ("say", "mia", "Then let's enjoy the sun today!", "jump"),
+        ],
+        phrases=["It's sunny and warm.", "It was cold and rainy.",
+                 "What's your favorite season?", "I love snow!",
+                 "Will it rain tomorrow?"],
+    ),
+    dict(
+        slug="09-my-family", title="My Family", scene="home",
+        cast=dict(sam=dict(x=470), mia=dict(x=-80)),
+        script=[
+            ("walk", "mia", 230, 2.0),
+            ("say", "sam", "Welcome to my house, Mia!", "wave"),
+            ("say", "mia", "Thank you! Who is in these photos?", "point"),
+            ("say", "sam", "This is my family.", "point_back"),
+            ("say", "sam", "This is my mother, and this is my father.", "talk"),
+            ("say", "mia", "Do you have any brothers or sisters?", "talk"),
+            ("say", "sam", "Yes. I have one sister. Her name is Lily.", "talk"),
+            ("say", "mia", "How old is she?", "talk"),
+            ("say", "sam", "She is ten years old.", "talk"),
+            ("say", "mia", "I have two brothers. They are older than me.", "talk"),
+            ("say", "sam", "Wow! A big family!", "jump"),
+            ("say", "mia", "Yes, and I love them very much.", "nod"),
+        ],
+        phrases=["This is my family.", "This is my mother.",
+                 "Do you have any brothers or sisters?", "How old is she?",
+                 "I have two brothers."],
     ),
 ]
 NUM = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]

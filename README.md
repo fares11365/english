@@ -12,6 +12,9 @@ followed by a "listen and repeat" recap of the key phrases.
 | 4 | Going Shopping (buying clothes) | `videos/04-going-shopping.mp4` |
 | 5 | What Do You Like? (hobbies, likes and dislikes) | `videos/05-what-do-you-like.mp4` |
 | 6 | At the Doctor (health) | `videos/06-at-the-doctor.mp4` |
+| 7 | What Time Is It? (telling the time) | `videos/07-what-time-is-it.mp4` |
+| 8 | How's the Weather? (weather and seasons) | `videos/08-the-weather.mp4` |
+| 9 | My Family | `videos/09-my-family.mp4` |
 
 ## Make your own
 
