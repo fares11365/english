@@ -15,6 +15,9 @@ followed by a "listen and repeat" recap of the key phrases.
 | 7 | What Time Is It? (telling the time) | `videos/07-what-time-is-it.mp4` |
 | 8 | How's the Weather? (weather and seasons) | `videos/08-the-weather.mp4` |
 | 9 | My Family | `videos/09-my-family.mp4` |
+| 10 | At the Restaurant | `videos/tiktok/10-at-the-restaurant.mp4` |
+| 11 | My Daily Routine | `videos/tiktok/11-my-daily-routine.mp4` |
+| 12 | Weekend Plans (inviting a friend) | `videos/tiktok/12-weekend-plans.mp4` |
 
 ## Make your own
 
@@ -35,3 +38,7 @@ first run.
 `python3 make_videos.py --tiktok` renders 1080x1920 (9:16) versions into
 `videos/tiktok/`. Text is kept away from the bottom caption area and the
 right-hand buttons.
+
+From episode 10 the TikTok versions open with a hook question (`hook`, `hook_ar`)
+and show an Arabic translation under each line (5th item of a `say` line,
+and `phrases_ar`).

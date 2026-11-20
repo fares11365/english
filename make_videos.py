@@ -146,6 +146,14 @@ class Cv:
     def width(self, s, size, bold=True):
         return font(size, bold).getlength(s) / S
 
+    def ar(self, xy, s, size, fill=INK, anchor="mm"):
+        """Right-to-left Arabic text (needs Pillow with libraqm)."""
+        self.d.text(self.pts([xy])[0], s, font=font(size), fill=fill, anchor=anchor,
+                    direction="rtl")
+
+    def ar_width(self, s, size):
+        return font(size).getlength(s, direction="rtl") / S
+
 
 def wrap(cv, text, size, maxw):
     lines, cur = [], ""
@@ -617,6 +625,84 @@ EPISODES = [
                  "Do you have any brothers or sisters?", "How old is she?",
                  "I have two brothers."],
     ),
+    dict(
+        slug="10-at-the-restaurant", title="At the Restaurant", scene="cafe",
+        hook="How do you order food in English?",
+        hook_ar="كيف تطلب الطعام بالإنجليزي؟",
+        cast=dict(sam=dict(x=-80), mia=dict(x=940, facing=-1)),
+        script=[
+            ("walk", "sam", 600, 2.0),
+            ("say", "mia", "Hello! Are you ready to order?", "wave", "مرحباً! هل أنت جاهز للطلب؟"),
+            ("say", "sam", "Yes, please. I'd like a chicken sandwich.", "talk",
+             "نعم، من فضلك. أريد ساندويش دجاج."),
+            ("say", "mia", "Anything to drink?", "talk", "هل تريد شيئاً للشرب؟"),
+            ("say", "sam", "An orange juice, please.", "talk", "عصير برتقال، من فضلك."),
+            ("say", "mia", "For here or to go?", "talk", "هنا أم سفري؟"),
+            ("say", "sam", "For here, please.", "point", "هنا، من فضلك."),
+            ("set", "cup", True),
+            ("say", "mia", "Here you go. Enjoy your meal!", "give", "تفضل. بالهناء والشفاء!"),
+            ("say", "sam", "Can I have the bill, please?", "talk", "ممكن الحساب، من فضلك؟"),
+            ("say", "mia", "Sure. That's eight dollars.", "talk", "أكيد. ثمانية دولارات."),
+            ("say", "sam", "Here you are. Keep the change!", "give", "تفضل. خلّي الباقي لك!"),
+            ("say", "mia", "Thank you! See you again!", "wave", "شكراً! نراك مرة أخرى!"),
+        ],
+        phrases=["Are you ready to order?", "I'd like a chicken sandwich.", "For here or to go?",
+                 "Can I have the bill, please?", "Keep the change!"],
+        phrases_ar=["هل أنت جاهز للطلب؟", "أريد ساندويش دجاج.", "هنا أم سفري؟",
+                    "ممكن الحساب، من فضلك؟", "خلّي الباقي لك!"],
+    ),
+    dict(
+        slug="11-my-daily-routine", title="My Daily Routine", scene="home",
+        hook="Can you talk about your day in English?",
+        hook_ar="هل تستطيع أن تتكلم عن يومك بالإنجليزي؟",
+        cast=dict(sam=dict(x=470), mia=dict(x=-80)),
+        script=[
+            ("walk", "mia", 230, 2.0),
+            ("say", "mia", "Sam, what time do you wake up?", "talk", "سام، متى تستيقظ؟"),
+            ("say", "sam", "I wake up at seven o'clock.", "talk", "أستيقظ الساعة السابعة."),
+            ("say", "mia", "What do you do in the morning?", "talk", "ماذا تفعل في الصباح؟"),
+            ("say", "sam", "I take a shower and have breakfast.", "think",
+             "أستحم وأتناول الفطور."),
+            ("say", "mia", "When do you go to work?", "talk", "متى تذهب إلى العمل؟"),
+            ("say", "sam", "I go to work at eight thirty.", "talk",
+             "أذهب إلى العمل الساعة الثامنة والنصف."),
+            ("say", "mia", "And in the evening?", "talk", "وفي المساء؟"),
+            ("say", "sam", "I cook dinner and watch TV.", "talk", "أطبخ العشاء وأشاهد التلفاز."),
+            ("say", "mia", "What time do you go to bed?", "talk", "متى تذهب إلى النوم؟"),
+            ("say", "sam", "I usually go to bed at eleven.", "shrug",
+             "عادةً أنام الساعة الحادية عشرة."),
+            ("say", "mia", "That's a good routine!", "jump", "هذا روتين جيد!"),
+        ],
+        phrases=["I wake up at seven o'clock.", "I have breakfast.", "I go to work.",
+                 "I watch TV.", "I go to bed at eleven."],
+        phrases_ar=["أستيقظ الساعة السابعة.", "أتناول الفطور.", "أذهب إلى العمل.",
+                    "أشاهد التلفاز.", "أنام الساعة الحادية عشرة."],
+    ),
+    dict(
+        slug="12-weekend-plans", title="Weekend Plans", scene="park",
+        hook="How do you invite a friend in English?",
+        hook_ar="كيف تعزم صديقك بالإنجليزي؟",
+        cast=dict(sam=dict(x=-80), mia=dict(x=W + 80)),
+        script=[
+            ("walk", "sam", 470, 1.8), ("walk", "mia", 810, 1.8),
+            ("say", "sam", "Hi, Mia! Are you free this weekend?", "wave",
+             "أهلاً ميا! هل أنتِ فاضية هذا الأسبوع؟"),
+            ("say", "mia", "I think so. Why?", "think", "أظن ذلك. لماذا؟"),
+            ("say", "sam", "Do you want to go to the cinema?", "talk",
+             "هل تريدين الذهاب إلى السينما؟"),
+            ("say", "mia", "That sounds great! When?", "jump", "فكرة رائعة! متى؟"),
+            ("say", "sam", "How about Saturday evening?", "talk", "ما رأيك بمساء السبت؟"),
+            ("say", "mia", "Sorry, I'm busy on Saturday.", "shrug", "آسفة، أنا مشغولة يوم السبت."),
+            ("say", "mia", "Can we go on Sunday?", "talk", "هل يمكننا الذهاب يوم الأحد؟"),
+            ("say", "sam", "Sure! Let's meet at six o'clock.", "talk",
+             "أكيد! لنلتقِ الساعة السادسة."),
+            ("say", "mia", "Perfect! See you on Sunday!", "wave", "ممتاز! أراك يوم الأحد!"),
+        ],
+        phrases=["Are you free this weekend?", "Do you want to go to the cinema?",
+                 "How about Saturday?", "Sorry, I'm busy.", "Let's meet at six o'clock."],
+        phrases_ar=["هل أنت فاضي هذا الأسبوع؟", "هل تريد الذهاب إلى السينما؟",
+                    "ما رأيك بيوم السبت؟", "آسف، أنا مشغول.", "لنلتقِ الساعة السادسة."],
+    ),
 ]
 NUM = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
 
@@ -636,8 +722,11 @@ def build(ep, n):
         add(kind, pre + len(a) / SR + post, who=who, text=text, action=action,
             audio=a, pre=pre, **kw)
 
-    say("title", "mia", f"English with Stick Man. Episode {NUM[n]}. "
-        f"{ep.get('spoken_title', ep['title'])}.", "wave", post=0.7)
+    if ep.get("hook"):  # open on a question instead of a title announcement
+        say("title", "mia", ep["hook"], "wave", post=0.5)
+    else:
+        say("title", "mia", f"English with Stick Man. Episode {NUM[n]}. "
+            f"{ep.get('spoken_title', ep['title'])}.", "wave", post=0.7)
     for ev in ep["script"]:
         if ev[0] == "walk":
             who, x1, dur = ev[1], ev[2], ev[3]
@@ -648,7 +737,7 @@ def build(ep, n):
             if 0 < x1 < W:
                 pos[who]["facing"] = 1 if x1 < 640 else -1
         elif ev[0] == "say":
-            say("say", ev[1], ev[2], ev[3])
+            say("say", ev[1], ev[2], ev[3], ar=ev[4] if len(ev) > 4 else None)
         elif ev[0] == "set":
             state[ev[1]] = ev[2]
     say("recap", "mia", "Now, listen and repeat.", "talk", idx=-1, turn=False)
@@ -758,6 +847,12 @@ def fit(cv, text, size, maxw):
     return size
 
 
+def ar_fit(cv, text, size, maxw):
+    while cv.ar_width(text, size) > maxw:
+        size -= 1
+    return size
+
+
 def render_frame_v(ep, n, s, t, bgs):
     """9:16 layout. Text stays clear of TikTok's bottom caption and right-hand buttons."""
     lt = t - s["t0"]
@@ -773,7 +868,14 @@ def render_frame_v(ep, n, s, t, bgs):
     top.text((VW / 2, 185), head, fit(top, head, 42, 640), (255, 255, 255), "mm")
     top.text((VW / 2, 1010), "Listen · Read · Repeat", 24, (140, 150, 195), "mm")
     cv, pg = Cv(im, -x0, SY), Cv(im, 0, SY)  # scrolled stage / fixed stage
-    if kind == "title":
+    if kind == "title" and ep.get("hook_ar"):
+        pg.rect((24, 14, 696, 250), fill=(255, 255, 255), outline=(230, 70, 130), w=6, r=26)
+        pg.ar((360, 80), ep["hook_ar"], ar_fit(pg, ep["hook_ar"], 46, 630), INK)
+        for i, ln in enumerate(wrap(pg, ep["hook"], 34, 620)):
+            pg.text((360, 160 + i * 42), ln, 34, (60, 90, 150), "mm")
+        draw_fig(pg, "sam", 250, 1, "think", t, 0)
+        draw_fig(pg, "mia", 470, -1, "wave", t, mouth_of(s, "mia", lt))
+    elif kind == "title":
         pg.text((360, 45), f"EPISODE {n}", 28, (150, 90, 20), "mm")
         for i, ln in enumerate(wrap(pg, ep["title"], 62, 640)):
             pg.text((360, 115 + i * 72), ln, 62, INK, "mm")
@@ -799,7 +901,15 @@ def render_frame_v(ep, n, s, t, bgs):
                     INK if i <= s["idx"] else (165, 170, 180), "lm")
         act = "point_up" if s["action"] == "point" else s["action"]
         draw_fig(pg, "mia", 360, 1, act, t, mouth_of(s, "mia", lt), k=0.8)
-        if s["turn"]:
+        if s["turn"] and ep.get("phrases_ar"):
+            ph, ar = ep["phrases"][s["idx"]], ep["phrases_ar"][s["idx"]]
+            pg.rect((30, 556, 610, 704), fill=(255, 250, 225), outline=(240, 170, 40), w=4, r=22)
+            pg.text((320, 584), "Your turn!", 26, (215, 140, 20), "mm")
+            pg.text((320, 622), ph, fit(pg, ph, 34, 540), INK, "mm")
+            pg.ar((320, 662), ar, ar_fit(pg, ar, 28, 540), (110, 90, 60))
+            pg.rect((60, 684, 580, 692), fill=(235, 225, 190), r=4)
+            pg.rect((60, 684, 60 + 520 * min(1, lt / s["dur"]), 692), fill=(240, 170, 40), r=4)
+        elif s["turn"]:
             ph = ep["phrases"][s["idx"]]
             pg.rect((30, 596, 610, 704), fill=(255, 250, 225), outline=(240, 170, 40), w=4, r=22)
             pg.text((320, 624), "Your turn!", 26, (215, 140, 20), "mm")
@@ -831,7 +941,16 @@ def render_frame_v(ep, n, s, t, bgs):
             pg.rect((56, 6, 56 + pg.width(c["name"], 24) + 36, 44), fill=c["accent"], r=14)
             pg.text((74, 25), c["name"], 24, (255, 255, 255), "lm")
             lines = wrap(pg, s["text"], 36, 610)
-            y = 98 - (len(lines) - 1) * 21
+            ar = s.get("ar")
+            if ar:
+                pg.rect((30, 24, 690, 222), fill=(255, 255, 255), outline=c["accent"], w=4, r=22)
+                pg.rect((56, 6, 56 + pg.width(c["name"], 24) + 36, 44), fill=c["accent"], r=14)
+                pg.text((74, 25), c["name"], 24, (255, 255, 255), "lm")
+                y = 92 - (len(lines) - 1) * 21
+                pg.stroke([(120, 158), (600, 158)], (230, 230, 236), 2)
+                pg.ar((360, 190), ar, ar_fit(pg, ar, 32, 620), (90, 100, 130))
+            else:
+                y = 98 - (len(lines) - 1) * 21
             for ln in lines:
                 pg.text((360, y), ln, 36, INK, "mm")
                 y += 42
