@@ -407,6 +407,40 @@ def scene_home():
     return im, None
 
 
+def scene_hotel():
+    im = gradient((235, 228, 245), (245, 238, 228))
+    cv = Cv(im)
+    cv.rect((0, 500, W, H), fill=(120, 60, 70))
+    for x in range(40, W, 120):
+        cv.rect((x, 520, x + 60, 530), fill=(150, 85, 90), r=4)
+    cv.text((640, 58), "STICK HOTEL", 44, (110, 70, 140), "ma")
+    for i in range(3):
+        cv.circle((560 + i * 80, 125), 9, fill=(240, 190, 60))
+    cv.rect((90, 140, 330, 330), fill=(140, 95, 65), r=10)  # key board
+    for r in range(3):
+        for c in range(4):
+            x, y = 125 + c * 55, 175 + r * 55
+            cv.circle((x, y), 6, fill=(230, 200, 120))
+            cv.stroke([(x, y + 6), (x, y + 28)], (230, 200, 120), 5)
+    cv.rect((400, 200, 470, 500), fill=(200, 190, 210), r=6)  # lift
+    cv.rect((474, 200, 544, 500), fill=(200, 190, 210), r=6)
+    cv.text((472, 180), "LIFT", 20, (110, 70, 140), "mm")
+    cv.circle((1180, 470), 26, fill=(90, 160, 90))  # plant
+    cv.circle((1160, 440), 22, fill=(70, 140, 80))
+    cv.rect((1160, 470, 1200, 520), fill=(170, 110, 70), r=6)
+
+    def fg(cv, st):
+        cv.rect((760, 420, 1130, 560), fill=(110, 70, 140), r=10)
+        cv.rect((740, 400, 1150, 432), fill=(80, 50, 100), r=8)
+        cv.text((945, 490), "RECEPTION", 24, (255, 235, 200), "mm")
+        cv.pie((1080, 400), 18, 180, 360, (240, 190, 60))  # bell
+        cv.circle((1080, 380), 4, fill=(240, 190, 60))
+        if st.get("key"):
+            cv.circle((800, 392), 8, fill=(240, 190, 60))
+            cv.stroke([(808, 392), (836, 392)], (240, 190, 60), 5)
+    return im, fg
+
+
 def scene_plain(top, bot):
     def make():
         im = gradient(top, bot)
@@ -415,7 +449,7 @@ def scene_plain(top, bot):
     return make
 
 
-SCENES = dict(home=scene_home, shop=scene_shop, clinic=scene_clinic, park=scene_park, cafe=scene_cafe, street=scene_street,
+SCENES = dict(hotel=scene_hotel, home=scene_home, shop=scene_shop, clinic=scene_clinic, park=scene_park, cafe=scene_cafe, street=scene_street,
               title=scene_plain((255, 214, 102), (255, 240, 190)),
               board=scene_plain((200, 225, 245), (235, 245, 250)),
               end=scene_plain((160, 220, 190), (225, 245, 225)))
@@ -702,6 +736,94 @@ EPISODES = [
                  "How about Saturday?", "Sorry, I'm busy.", "Let's meet at six o'clock."],
         phrases_ar=["هل أنت فاضي هذا الأسبوع؟", "هل تريد الذهاب إلى السينما؟",
                     "ما رأيك بيوم السبت؟", "آسف، أنا مشغول.", "لنلتقِ الساعة السادسة."],
+    ),
+    dict(
+        slug="13-at-the-hotel", title="At the Hotel", scene="hotel",
+        hook="How do you check in at a hotel in English?",
+        hook_ar="كيف تحجز غرفة في الفندق بالإنجليزي؟",
+        cast=dict(sam=dict(x=-80), mia=dict(x=950, facing=-1)),
+        script=[
+            ("walk", "sam", 620, 2.2),
+            ("say", "mia", "Good evening! Welcome to the Stick Hotel.", "wave",
+             "مساء الخير! أهلاً بك في فندق ستيك."),
+            ("say", "sam", "Hi. I have a reservation. My name is Sam.", "talk",
+             "مرحباً. عندي حجز. اسمي سام."),
+            ("say", "mia", "Let me check. Yes, a single room for two nights.", "think",
+             "دعني أتحقق. نعم، غرفة مفردة لليلتين."),
+            ("say", "sam", "That's right.", "nod", "هذا صحيح."),
+            ("say", "mia", "Can I see your passport, please?", "talk",
+             "ممكن أرى جواز سفرك، من فضلك؟"),
+            ("say", "sam", "Sure. Here you are.", "give", "أكيد. تفضل."),
+            ("set", "key", True),
+            ("say", "mia", "Thank you. Your room is number two hundred and five.", "give",
+             "شكراً. غرفتك رقم مئتين وخمسة."),
+            ("say", "sam", "What time is breakfast?", "talk", "متى موعد الفطور؟"),
+            ("say", "mia", "From seven to ten in the morning.", "talk",
+             "من السابعة حتى العاشرة صباحاً."),
+            ("say", "sam", "Where is the lift?", "talk", "أين المصعد؟"),
+            ("say", "mia", "It's over there, on your left.", "point_back", "هناك، على يسارك."),
+            ("say", "sam", "Thank you very much!", "wave", "شكراً جزيلاً!"),
+            ("say", "mia", "Enjoy your stay!", "wave", "نتمنى لك إقامة ممتعة!"),
+        ],
+        phrases=["I have a reservation.", "Can I see your passport?", "What time is breakfast?",
+                 "Where is the lift?", "Enjoy your stay!"],
+        phrases_ar=["عندي حجز.", "ممكن أرى جواز سفرك؟", "متى موعد الفطور؟",
+                    "أين المصعد؟", "نتمنى لك إقامة ممتعة!"],
+    ),
+    dict(
+        slug="14-on-the-phone", title="On the Phone", scene="home",
+        hook="What do you say on the phone in English?",
+        hook_ar="ماذا تقول على الهاتف بالإنجليزي؟",
+        cast=dict(sam=dict(x=390), mia=dict(x=820, facing=-1)),
+        script=[
+            ("say", "sam", "Hello? Who's calling, please?", "think", "ألو؟ من المتصل، من فضلك؟"),
+            ("say", "mia", "Hi, Sam! It's Mia.", "think", "أهلاً سام! أنا ميا."),
+            ("say", "sam", "Oh, hi Mia! How are you?", "think", "أهلاً ميا! كيف حالك؟"),
+            ("say", "mia", "I'm good. Is Lily there?", "think", "أنا بخير. هل ليلي موجودة؟"),
+            ("say", "sam", "Sorry, she's not here right now.", "shrug",
+             "آسف، هي ليست هنا الآن."),
+            ("say", "sam", "Can I take a message?", "think", "هل تريدين أن تتركي رسالة؟"),
+            ("say", "mia", "Yes, please. Can you ask her to call me back?", "think",
+             "نعم، من فضلك. ممكن تطلب منها أن تتصل بي؟"),
+            ("say", "sam", "Sure. What's your number?", "think", "أكيد. ما رقمك؟"),
+            ("say", "mia", "It's five five five, one two three four.", "think",
+             "إنه ٥٥٥، ١٢٣٤."),
+            ("say", "sam", "Sorry, can you say that again, please?", "think",
+             "آسف، ممكن تعيديه مرة أخرى؟"),
+            ("say", "mia", "Five five five, one two three four.", "think", "٥٥٥، ١٢٣٤."),
+            ("say", "sam", "Got it! I'll tell her.", "nod", "تمام! سأخبرها."),
+            ("say", "mia", "Thanks, Sam. Bye!", "wave", "شكراً سام. مع السلامة!"),
+        ],
+        phrases=["Who's calling, please?", "She's not here right now.", "Can I take a message?",
+                 "Can you call me back?", "Can you say that again, please?"],
+        phrases_ar=["من المتصل، من فضلك؟", "هي ليست هنا الآن.", "هل تريد أن تترك رسالة؟",
+                    "ممكن تتصل بي لاحقاً؟", "ممكن تعيدها مرة أخرى؟"],
+    ),
+    dict(
+        slug="15-saying-sorry", title="Saying Sorry", scene="street",
+        hook="How do you say sorry in English?",
+        hook_ar="كيف تعتذر بالإنجليزي؟",
+        cast=dict(sam=dict(x=-80), mia=dict(x=W + 80)),
+        script=[
+            ("walk", "sam", 780, 2.0), ("walk", "mia", 960, 1.4),
+            ("say", "sam", "Oops! I'm so sorry!", "shrug", "أوه! أنا آسف جداً!"),
+            ("say", "mia", "Ouch! Watch out!", "shrug", "آخ! انتبه!"),
+            ("say", "sam", "I'm really sorry. Are you okay?", "talk",
+             "أنا آسف حقاً. هل أنتِ بخير؟"),
+            ("say", "mia", "Yes, I'm okay. Don't worry about it.", "nod",
+             "نعم، أنا بخير. لا تقلق."),
+            ("say", "sam", "It was my fault. I wasn't looking.", "think",
+             "كان خطئي. لم أكن منتبهاً."),
+            ("say", "mia", "No problem. It happens!", "talk", "لا مشكلة. هذا يحدث!"),
+            ("say", "sam", "Excuse me, is this your phone?", "give", "عفواً، هل هذا هاتفك؟"),
+            ("say", "mia", "Oh, yes! Thank you so much!", "jump", "أوه، نعم! شكراً جزيلاً!"),
+            ("say", "sam", "You're welcome. Sorry again!", "wave", "عفواً. آسف مرة أخرى!"),
+            ("say", "mia", "That's alright. Have a nice day!", "wave",
+             "لا بأس. أتمنى لك يوماً سعيداً!"),
+        ],
+        phrases=["I'm so sorry!", "Are you okay?", "Don't worry about it.",
+                 "It was my fault.", "No problem."],
+        phrases_ar=["أنا آسف جداً!", "هل أنت بخير؟", "لا تقلق.", "كان خطئي.", "لا مشكلة."],
     ),
 ]
 NUM = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]

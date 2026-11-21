@@ -18,6 +18,9 @@ followed by a "listen and repeat" recap of the key phrases.
 | 10 | At the Restaurant | `videos/tiktok/10-at-the-restaurant.mp4` |
 | 11 | My Daily Routine | `videos/tiktok/11-my-daily-routine.mp4` |
 | 12 | Weekend Plans (inviting a friend) | `videos/tiktok/12-weekend-plans.mp4` |
+| 13 | At the Hotel | `videos/tiktok/13-at-the-hotel.mp4` |
+| 14 | On the Phone | `videos/tiktok/14-on-the-phone.mp4` |
+| 15 | Saying Sorry | `videos/tiktok/15-saying-sorry.mp4` |
 
 ## Make your own
 
