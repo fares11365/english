@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vocab Builder</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Vocab Builder</h1>
+    <nav>
+      <button class="tab active" data-view="cards">Flashcards</button>
+      <button class="tab" data-view="quiz">Quiz</button>
+      <button class="tab" data-view="words">My Words</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Flashcards -->
+    <section id="cards" class="view active">
+      <p class="stats" id="card-stats"></p>
+      <div class="card" id="card" tabindex="0" aria-label="Flashcard, press space to flip">
+        <div class="card-inner">
+          <div class="card-front">
+            <div class="word" id="card-word"></div>
+            <div class="pos" id="card-pos"></div>
+            <div class="hint">Tap or press Space to see the meaning</div>
+          </div>
+          <div class="card-back">
+            <div class="def" id="card-def"></div>
+            <div class="example" id="card-example"></div>
+          </div>
+        </div>
+      </div>
+      <div class="actions">
+        <button id="btn-again" class="secondary">Still learning</button>
+        <button id="btn-know">I know it</button>
+      </div>
+      <p class="empty" id="cards-empty" hidden>No words yet. Add some in “My Words”.</p>
+    </section>
+
+    <!-- Quiz -->
+    <section id="quiz" class="view">
+      <p class="stats" id="quiz-score">Score: 0 / 0</p>
+      <div class="quiz-q" id="quiz-q"></div>
+      <div class="choices" id="choices"></div>
+      <p class="feedback" id="feedback"></p>
+      <button id="btn-next" hidden>Next question</button>
+      <p class="empty" id="quiz-empty" hidden>Add at least 4 words to start the quiz.</p>
+    </section>
+
+    <!-- Word list -->
+    <section id="words" class="view">
+      <form id="add-form">
+        <h2>Add a word</h2>
+        <div class="row">
+          <input id="f-word" placeholder="Word" required>
+          <select id="f-pos">
+            <option>noun</option><option>verb</option><option>adjective</option>
+            <option>adverb</option><option>phrase</option><option>other</option>
+          </select>
+        </div>
+        <input id="f-def" placeholder="Meaning / definition" required>
+        <input id="f-example" placeholder="Example sentence (optional)">
+        <button type="submit">Add word</button>
+      </form>
+
+      <div class="list-head">
+        <h2>Word list <span id="count"></span></h2>
+        <input id="search" type="search" placeholder="Search…">
+      </div>
+      <ul id="word-list"></ul>
+      <button id="btn-reset" class="link">Reset progress</button>
+    </section>
+  </main>
+
+  <script src="words.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

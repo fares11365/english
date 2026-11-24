@@ -1,0 +1,23 @@
+// Starter vocabulary. Users can add their own words in the app.
+const STARTER_WORDS = [
+  { word: "abundant", pos: "adjective", def: "existing in large quantities; more than enough", example: "The region has abundant rainfall." },
+  { word: "benevolent", pos: "adjective", def: "kind and wanting to help others", example: "A benevolent neighbor shoveled our driveway." },
+  { word: "candid", pos: "adjective", def: "honest and direct, even when the truth is uncomfortable", example: "She gave a candid answer about her mistakes." },
+  { word: "diligent", pos: "adjective", def: "showing care and effort in one's work", example: "A diligent student reviews notes every day." },
+  { word: "eloquent", pos: "adjective", def: "able to express ideas clearly and persuasively", example: "He gave an eloquent speech at the wedding." },
+  { word: "feasible", pos: "adjective", def: "possible to do easily or conveniently", example: "Is it feasible to finish by Friday?" },
+  { word: "gratitude", pos: "noun", def: "the feeling of being thankful", example: "She expressed her gratitude with a card." },
+  { word: "hesitate", pos: "verb", def: "to pause before saying or doing something because you are unsure", example: "Don't hesitate to ask questions." },
+  { word: "inevitable", pos: "adjective", def: "certain to happen; unavoidable", example: "Change is inevitable." },
+  { word: "justify", pos: "verb", def: "to show or prove that something is right or reasonable", example: "Can you justify the extra cost?" },
+  { word: "meticulous", pos: "adjective", def: "showing great attention to detail", example: "He keeps meticulous records." },
+  { word: "negotiate", pos: "verb", def: "to discuss something in order to reach an agreement", example: "They negotiated a better salary." },
+  { word: "obstacle", pos: "noun", def: "something that blocks the way or prevents progress", example: "Fear is the biggest obstacle to learning." },
+  { word: "persuade", pos: "verb", def: "to make someone agree to do or believe something by giving reasons", example: "I persuaded my friend to join the class." },
+  { word: "reluctant", pos: "adjective", def: "unwilling and hesitant", example: "He was reluctant to leave the party." },
+  { word: "thrive", pos: "verb", def: "to grow, develop, or succeed well", example: "Plants thrive in sunlight." },
+  { word: "vivid", pos: "adjective", def: "producing clear, strong images in the mind; very bright", example: "She has vivid memories of her childhood." },
+  { word: "give up", pos: "phrase", def: "to stop trying to do something", example: "Never give up on your goals." },
+  { word: "look forward to", pos: "phrase", def: "to feel happy and excited about something that will happen", example: "I look forward to meeting you." },
+  { word: "nevertheless", pos: "adverb", def: "in spite of that; however", example: "It was raining; nevertheless, we went out." },
+];
