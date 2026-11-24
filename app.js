@@ -183,7 +183,6 @@ function renderList() {
     del.setAttribute("aria-label", del.title);
     del.textContent = "×";
     del.addEventListener("click", () => {
-      if (!confirm(`Delete “${w.word}”?`)) return;
       state.words = state.words.filter((x) => x.id !== w.id);
       save();
       renderList();
@@ -202,9 +201,11 @@ $("add-form").addEventListener("submit", (e) => {
   const def = $("f-def").value.trim();
   if (!word || !def) return;
   if (state.words.some((w) => w.word.toLowerCase() === word.toLowerCase())) {
-    alert(`“${word}” is already in your list.`);
+    $("form-msg").textContent = `“${word}” is already in your list.`;
+    $("form-msg").hidden = false;
     return;
   }
+  $("form-msg").hidden = true;
   state.words.push({
     id: Date.now(),
     word,
@@ -220,8 +221,18 @@ $("add-form").addEventListener("submit", (e) => {
   renderList();
 });
 
+// Two-step reset: first click asks, second click within 4 seconds resets.
+let resetArmed = null;
 $("btn-reset").addEventListener("click", () => {
-  if (!confirm("Reset learning progress for all words?")) return;
+  const btn = $("btn-reset");
+  if (!resetArmed) {
+    btn.textContent = "Click again to reset all progress";
+    resetArmed = setTimeout(() => { resetArmed = null; btn.textContent = "Reset progress"; }, 4000);
+    return;
+  }
+  clearTimeout(resetArmed);
+  resetArmed = null;
+  btn.textContent = "Reset progress";
   state.words.forEach((w) => { w.level = 0; w.due = 0; });
   save();
   renderList();
